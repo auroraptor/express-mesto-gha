@@ -4,6 +4,8 @@ const User = require('../models/user');
 const log = (...args) => console.log(...args);
 
 const createUser = (req, res) => {
+  log(req.body);
+
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
