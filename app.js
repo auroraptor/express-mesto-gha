@@ -6,11 +6,12 @@ const router = require('./routes');
 const { PORT = 3000 } = process.env;
 const app = express();
 
-// mongoose.createConnection('mongodb://localhost:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+mongoose.connect('mongodb://localhost:27017/mestodb')
+  .then(() => console.log('connected to the server'))
+  .catch((err) => console.log('error: ', err.message));
 
 app.use((req, res, next) => {
   req.user = {
@@ -20,9 +21,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', router); // запускаем
+app.use('/', router);
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });
