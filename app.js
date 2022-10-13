@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const router = require('./routes');
 const { logNow } = require('./utils/log');
+const errorHandler = require('./utils/err');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -16,11 +17,13 @@ mongoose.connect('mongodb://localhost:27017/mestodb')
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6346c7bbb3b354c86cad4d99',
+    _id: '6347e78a57b8f6544168e2e3',
   };
 
   next();
 });
+
+// app.use(errorHandler);
 
 app.use('/', router);
 
