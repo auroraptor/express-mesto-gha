@@ -1,7 +1,5 @@
 const User = require('../models/user');
-
-// eslint-disable-next-line no-console
-const log = (...args) => console.log(...args);
+const { log } = require('../utils/log');
 
 const createUser = (req, res) => {
   log(req.body);
@@ -27,15 +25,5 @@ const getUsers = (req, res) => {
     })
     .finally(() => log('don\'t you say it\'s over'));
 };
-
-// async function testAsyncGetUsers(req, res) {
-//   try {
-//     log('let\'s do this thing');
-//     getUsers(req, res);
-//   } catch (err) {
-//     log(err.message);
-//   }
-//   log('don\'t you say it\'s over');
-// }
 
 module.exports = { createUser, getUsers };
