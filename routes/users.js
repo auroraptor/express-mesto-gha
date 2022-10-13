@@ -1,15 +1,12 @@
 const router = require('express').Router();
-const { getUsers, createUser } = require('../controllers/users');
-const User = require('../models/user');
+const {
+  getUsers, createUser, findUser, updateUser, updateAvatar,
+} = require('../controllers/users');
 
-router.get('/users', getUsers);
-
-router.get('/users/:id', (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.send({ message: err.message }));
-});
-
-router.post('/users', createUser);
+router.get('/', getUsers);
+router.get('/:id', findUser);
+router.post('/', createUser);
+router.patch('/me', updateUser);
+router.patch('/me/avatar', updateAvatar);
 
 module.exports = router;
