@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const router = require('./routes');
 const { logNow } = require('./utils/log');
-const errorHandler = require('./utils/err');
 
 const { PORT = 3000 } = process.env;
 const app = express();
