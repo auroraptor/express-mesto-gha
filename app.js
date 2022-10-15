@@ -1,13 +1,14 @@
-/* eslint-disable max-len */
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const process = require('process');
+const expressWinston = require('express-winston');
 const router = require('./routes');
-const { log, logNow, logError } = require('./utils/log');
-// const { HTTP404Error } = require('./utils/BaseError');
+const { logNow, logError } = require('./utils/log');
 const { errorsHandler } = require('./utils/errorHandler');
-const { Error404 } = require('./utils/BaseError');
+const { logger } = require('./utils/logger');
+// eslint-disable-next-line import/extensions
+const { hardCodedUserId } = require('./utils/hardCodedUserId');
+const { HTTP404Error } = require('./errors/HTTP404Error');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -19,25 +20,18 @@ mongoose.connect('mongodb://localhost:27017/mestodb')
   .then(() => logNow('Connected to the server'))
   .catch((err) => logError(err));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6347e78a57b8f6544168e2e3',
-  };
+app.use(hardCodedUserId);
 
-  next();
-});
+// express-winston logger makes sense BEFORE the router
+app.use(expressWinston.logger(logger));
 
 app.use('/', router);
 
-// app.use(errorHandler);
+// express-winston errorLogger makes sense AFTER the router.
+app.use(expressWinston.errorLogger(logger));
 
-// Обработаем некорректный маршрут и вернём ошибку 404
 app.use('*', (req, res, next) => {
-  // eslint-disable-next-line no-undef
-  log(req);
-  // eslint-disable-next-line no-undef
-  log('there');
-  next(new Error404(`Страницы по адресу ${req.baseUrl} не существует`));
+  next(new HTTP404Error(`Некорректный запрос по адресу ${req.baseUrl} это последняя ошибка`));
 });
 
 app.use(errorsHandler);
@@ -45,11 +39,3 @@ app.use(errorsHandler);
 app.listen(PORT, () => {
   logNow(`App listening on port ${PORT}`);
 });
-
-// process.on('uncaughtException', (err, origin) => {
-//   // eslint-disable-next-line no-undef, max-len
-//   logNow(`${origin} ${err.name} c текстом ${err.message} не была обработана. Обратите внимание!`);
-// });
-
-// // Выбросим синхронную ошибку
-// throw new Error('🤭');
