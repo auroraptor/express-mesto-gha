@@ -34,11 +34,11 @@ module.exports.getCards = async (req, res) => {
 
 module.exports.removeCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.id);
+    const card = await Card.findByIdAndRemove(req.params.cardId);
     if (card === null) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
+      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
     }
-    const response = await res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.id} удалена` });
+    const response = await res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
     return response;
   } catch (error) {
     logNow(error.name);
@@ -54,7 +54,7 @@ module.exports.removeCard = async (req, res) => {
 module.exports.likeCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(
-      req.params.id,
+      req.params.cardId,
       { $addToSet: { likes: req.user._id } },
       { new: true },
     );
@@ -78,7 +78,7 @@ module.exports.likeCard = async (req, res) => {
 module.exports.dislikeCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(
-      req.params.id,
+      req.params.cardId,
       { $pull: { likes: req.user._id } }, // убрать _id из массива
       { new: true },
     );
