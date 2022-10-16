@@ -1,33 +1,98 @@
 const Card = require('../models/card');
-const { log } = require('../utils/log');
 
-const createCard = (req, res) => Card.create({ ...req.body, owner: req.user._id })
-  .then((card) => res.send(card))
-  .catch((err) => log(err.message));
+const regex = /`\w+`/gi;
+const { logNow } = require('../utils/log');
+const { HttpStatusCode } = require('../utils/HttpStatusCode');
 
-const getCards = (req, res) => Card.find({})
-  .then((cards) => res.send({ cards }))
-  .catch((err) => res.send({ message: err.message }));
+module.exports.createCard = async (req, res) => {
+  try {
+    const card = await Card.create({ ...req.body, owner: req.user._id });
+    const response = await res.status(HttpStatusCode.OK).send({ data: card });
+    return response;
+  } catch (error) {
+    logNow(error.name);
 
-const deleteCard = (req, res) => Card.findByIdAndRemove(req.params.id)
-  .then((card) => res.send({ data: card }))
-  .catch((err) => res.send(err.message));
+    if (error.name === 'ValidationError') {
+      return res.send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
+    }
 
-const likeCard = (req, res) => Card.findByIdAndUpdate(
-  req.params.id,
-  { $addToSet: { likes: req.user._id } },
-  { new: true },
-).then((card) => {
-  res.send(card);
-}).catch((err) => log(err.message));
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+  }
+};
 
-const dislikeCard = (req, res) => Card.findByIdAndUpdate(
-  req.params.id,
-  { $pull: { likes: req.user._id } }, // убрать _id из массива
-  { new: true },
-).then((card) => res.send(card))
-  .catch((err) => log(err.message));
+module.exports.getCards = async (req, res) => {
+  try {
+    const cards = await Card.find({});
+    const response = await res.status(HttpStatusCode.OK).send({ data: cards });
+    return response;
+  } catch (error) {
+    logNow(error.name);
 
-module.exports = {
-  createCard, getCards, deleteCard, likeCard, dislikeCard,
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+  }
+};
+
+module.exports.removeCard = async (req, res) => {
+  try {
+    const card = await Card.findByIdAndRemove(req.params.id);
+    if (card === null) {
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Карточка с id ${req.params.id} не найдена` });
+    }
+    const response = await res.status(HttpStatusCode.OK).send({ data: card });
+    return response;
+  } catch (error) {
+    logNow(error.name);
+
+    if (error.name === 'CastError') {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
+    }
+
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+  }
+};
+
+module.exports.likeCard = async (req, res) => {
+  try {
+    const card = await Card.findByIdAndUpdate(
+      req.params.id,
+      { $addToSet: { likes: req.user._id } },
+      { new: true },
+    );
+    if (card === null) {
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Карточка с id ${req.params.id} не найдена` });
+    }
+    const response = await res.status(HttpStatusCode.OK).send({ data: card });
+    return response;
+  } catch (error) {
+    logNow(error.name);
+
+    if (error.name === 'CastError') {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
+    }
+
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+  }
+};
+
+module.exports.dislikeCard = async (req, res) => {
+  try {
+    const card = await Card.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { new: true },
+    );
+    if (card === null) {
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Карточка с id ${req.params.id} не найдена` });
+    }
+    const response = await res.status(HttpStatusCode.OK).send({ data: card });
+    return response;
+  } catch (error) {
+    logNow(error.name);
+
+    if (error.name === 'CastError') {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
+    }
+
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+  }
 };

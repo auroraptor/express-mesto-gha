@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const expressWinston = require('express-winston');
 const router = require('./routes');
 const { logNow, logError } = require('./utils/log');
-const { errorsHandler } = require('./utils/errorHandler');
+const { errorHandler } = require('./utils/errorHandler');
 const { logger } = require('./utils/logger');
 // eslint-disable-next-line import/extensions
 const { hardCodedUserId } = require('./utils/hardCodedUserId');
@@ -34,7 +34,7 @@ app.use('*', (req, res, next) => {
   next(new HTTP404Error(`Некорректный запрос по адресу ${req.baseUrl}`));
 });
 
-app.use(errorsHandler);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   logNow(`App listening on port ${PORT}`);
