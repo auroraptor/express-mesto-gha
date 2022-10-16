@@ -31,7 +31,7 @@ app.use('/', router);
 app.use(expressWinston.errorLogger(logger));
 
 app.use('*', (req, res, next) => {
-  next(new HTTP404Error(`Некорректный запрос по адресу ${req.baseUrl} это последняя ошибка`));
+  next(new HTTP404Error(`Некорректный запрос по адресу ${req.baseUrl}`));
 });
 
 app.use(errorsHandler);
