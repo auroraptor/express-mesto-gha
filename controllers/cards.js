@@ -9,10 +9,10 @@ module.exports.createCard = async (req, res) => {
     const { name, link } = req.body;
     const owner = req.user._id;
     const card = await Card.create({ name, link, owner }, {
-      new: true, // ???
+      new: true,
       runValidators: true,
     });
-    const response = await res.send(card);
+    const response = await res.status(HttpStatusCode.OK).send({ id: card.id });
     return response;
   } catch (error) {
     logNow(error.name);
@@ -67,6 +67,7 @@ module.exports.likeCard = async (req, res) => {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
     }
     const response = await res.status(HttpStatusCode.OK).send({ message: '❤️' });
+    logNow(response);
     return response;
   } catch (error) {
     logNow(error.name);
