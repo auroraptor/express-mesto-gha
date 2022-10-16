@@ -7,7 +7,7 @@ const { HttpStatusCode } = require('../utils/HttpStatusCode');
 module.exports.createCard = async (req, res) => {
   try {
     const card = await Card.create({ ...req.body, owner: req.user._id });
-    const response = await res.status(HttpStatusCode.OK).send({ id: card.id });
+    const response = await res.status(HttpStatusCode.OK).send({ id: card._id });
     return response;
   } catch (error) {
     logNow(error.name);
@@ -62,7 +62,6 @@ module.exports.likeCard = async (req, res) => {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
     }
     const response = await res.status(HttpStatusCode.OK).send({ message: '❤️' });
-    logNow(response);
     return response;
   } catch (error) {
     logNow(error.name);
