@@ -18,16 +18,24 @@ mongoose.connect('mongodb://localhost:27017/mestodb')
   .then(() => logNow('Connected to the server'))
   .catch((err) => logError(err));
 
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '634aa867af58fa7ff431ff6f',
+//   };
+
+//   next();
+// });
+
+// express-winston logger makes sense BEFORE the router
+app.use(expressWinston.logger(logger));
+
 app.use((req, res, next) => {
   req.user = {
-    _id: '634aa867af58fa7ff431ff6f',
+    _id: '634aa867af58fa7ff431ff6f', // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
 
   next();
 });
-
-// express-winston logger makes sense BEFORE the router
-app.use(expressWinston.logger(logger));
 
 app.use('/', router);
 
