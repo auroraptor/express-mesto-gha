@@ -6,7 +6,7 @@ const router = require('./routes');
 const { logNow, logError } = require('./utils/log');
 const { logger } = require('./utils/logger');
 // const { errorHandler } = require('./utils/errorHandler');
-// const { HttpStatusCode } = require('./utils/HttpStatusCode');
+const { HttpStatusCode } = require('./utils/HttpStatusCode');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -42,9 +42,9 @@ app.use('/', router);
 // express-winston errorLogger makes sense AFTER the router.
 app.use(expressWinston.errorLogger(logger));
 
-// app.use('*', (req, res) => {
-//   res.status(HttpStatusCode.NOT_FOUND).send(`По адресу ${req.baseUrl} ничего не нашлось`);
-// });
+app.use('*', (req, res) => {
+  res.status(HttpStatusCode.NOT_FOUND).send(`По адресу ${req.baseUrl} ничего не нашлось`);
+});
 
 // app.use(errorHandler);
 
