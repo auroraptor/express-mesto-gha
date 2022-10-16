@@ -6,7 +6,9 @@ const { HttpStatusCode } = require('../utils/HttpStatusCode');
 
 module.exports.createCard = async (req, res) => {
   try {
-    const card = await Card.create({ ...req.body }, {
+    const { name, link } = req.body;
+    const owner = req.user._id;
+    const card = await Card.create({ name, link, owner }, {
       new: true, // ???
       runValidators: true,
     });
