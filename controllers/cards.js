@@ -39,7 +39,7 @@ module.exports.removeCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndRemove(req.params.id);
     if (card === null) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Карточка с id ${req.params.id} не найдена` });
+      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
     }
     const response = await res.status(HttpStatusCode.OK).send({ data: card });
     return response;
@@ -62,7 +62,7 @@ module.exports.likeCard = async (req, res) => {
       { new: true },
     );
     if (card === null) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Карточка с id ${req.params.id} не найдена` });
+      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
     }
     const response = await res.status(HttpStatusCode.OK).send({ data: card });
     return response;

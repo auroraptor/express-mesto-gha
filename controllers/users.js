@@ -57,7 +57,7 @@ module.exports.updateUser = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    const response = await res.send(user);
+    const response = await res.send({ ...user });
     return response;
   } catch (error) {
     logNow(error.name);
@@ -81,7 +81,7 @@ module.exports.updateAvatar = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    const response = await res.status(HttpStatusCode.OK).send(user);
+    const response = await res.status(HttpStatusCode.OK).send({ ...user });
     return response;
   } catch (error) {
     logNow(error.name);
