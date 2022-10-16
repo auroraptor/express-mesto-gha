@@ -43,7 +43,7 @@ app.use('/', router);
 app.use(expressWinston.errorLogger(logger));
 
 app.use('*', (req, res) => {
-  res.status(HttpStatusCode.NOT_FOUND).send(`По адресу ${req.baseUrl} ничего не нашлось`);
+  res.status(HttpStatusCode.NOT_FOUND).send({ message: `По адресу ${req.baseUrl} ничего не нашлось` });
 });
 
 // app.use(errorHandler);
