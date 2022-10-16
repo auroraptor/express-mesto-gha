@@ -43,7 +43,7 @@ module.exports.removeCard = async (req, res) => {
     if (card === null) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
     }
-    const response = await res.status(HttpStatusCode.OK).send({ data: card });
+    const response = await res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.id} удалена` });
     return response;
   } catch (error) {
     logNow(error.name);
