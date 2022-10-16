@@ -16,7 +16,7 @@ module.exports.createCard = async (req, res) => {
     logNow(error.name);
 
     if (error.name === 'ValidationError') {
-      return res.send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
     }
 
     return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
