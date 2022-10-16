@@ -15,6 +15,13 @@ const alignColorsAndTime = winston.format.combine(
   ),
 );
 
+winston.addColors({
+  info: 'bold blue', // fontStyle color
+  warn: 'italic yellow',
+  error: 'bold red',
+  debug: 'green',
+});
+
 const logger = winston.createLogger({
   levels: {
     error: 0,
