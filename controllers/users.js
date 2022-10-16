@@ -53,11 +53,11 @@ module.exports.getUserById = async (req, res) => {
 
 module.exports.updateUser = async (req, res) => {
   try {
-    await User.findByIdAndUpdate(req.user._id, req.body, {
+    const user = await User.findByIdAndUpdate(req.user._id, req.body, {
       new: true,
       runValidators: true,
     });
-    const response = await res.send({ data: null });
+    const response = await res.send(user);
     return response;
   } catch (error) {
     logNow(error.name);
@@ -77,11 +77,11 @@ module.exports.updateUser = async (req, res) => {
 module.exports.updateAvatar = async (req, res) => {
   try {
     const { _id } = req.user;
-    await User.findByIdAndUpdate(_id, req.body, {
+    const user = await User.findByIdAndUpdate(_id, req.body, {
       new: true,
       runValidators: true,
     });
-    const response = await res.status(HttpStatusCode.OK).send({ data: null });
+    const response = await res.status(HttpStatusCode.OK).send(user);
     return response;
   } catch (error) {
     logNow(error.name);

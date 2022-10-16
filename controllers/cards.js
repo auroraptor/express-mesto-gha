@@ -10,7 +10,7 @@ module.exports.createCard = async (req, res) => {
       new: true, // ???
       runValidators: true,
     });
-    const response = await res.status(HttpStatusCode.OK).send({ data: card });
+    const response = await res.send(card);
     return response;
   } catch (error) {
     logNow(error.name);
