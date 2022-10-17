@@ -5,7 +5,7 @@ const expressWinston = require('express-winston');
 const router = require('./routes');
 const { logNow, logError } = require('./utils/log');
 const { logger } = require('./utils/logger');
-// const { errorHandler } = require('./utils/errorHandler');
+const { hardCodedUserId } = require('./utils/hardCodedUserId');
 const { HttpStatusCode } = require('./utils/HttpStatusCode');
 
 const { PORT = 3000 } = process.env;
@@ -18,24 +18,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb')
   .then(() => logNow('Connected to the server'))
   .catch((err) => logError(err));
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '634aa867af58fa7ff431ff6f',
-//   };
-
-//   next();
-// });
-
 // express-winston logger makes sense BEFORE the router
 app.use(expressWinston.logger(logger));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '634aa867af58fa7ff431ff6f', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-
-  next();
-});
+app.use(hardCodedUserId);
 
 app.use('/', router);
 
