@@ -37,8 +37,6 @@ app.use('*', (req, res) => {
   res.status(HttpStatusCode.NOT_FOUND).send({ message: `По адресу ${req.baseUrl} ничего не нашлось` });
 });
 
-// app.use(errorHandler);
-
 app.listen(PORT, () => {
   logNow(`App listening on port ${PORT}`);
 });
