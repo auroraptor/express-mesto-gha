@@ -55,8 +55,6 @@ module.exports.removeCard = async (req, res) => {
 };
 
 module.exports.likeCard = async (req, res) => {
-  logNow('💋', req.body);
-
   try {
     logNow('id: ', req.params.cardId);
     const card = await Card.findByIdAndUpdate(
@@ -81,11 +79,7 @@ module.exports.likeCard = async (req, res) => {
 };
 
 module.exports.dislikeCard = async (req, res) => {
-  logNow(req.body);
-  logNow('id', req.params.cardId);
-
   try {
-    logNow('***', req.params.cardId);
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $pull: { likes: req.user._id } }, // убрать _id из массива
