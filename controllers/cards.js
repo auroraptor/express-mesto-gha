@@ -7,8 +7,6 @@ const { HttpStatusCode } = require('../utils/HttpStatusCode');
 module.exports.createCard = async (req, res) => {
   try {
     const card = await Card.create({ ...req.body, owner: req.user._id });
-    logNow('card: ', card);
-    logNow('id: ', card._id);
     const response = await res.status(HttpStatusCode.OK).send(card);
     return response;
   } catch (error) {
@@ -36,7 +34,6 @@ module.exports.getCards = async (req, res) => {
 
 module.exports.removeCard = async (req, res) => {
   try {
-    logNow(req.params.cardId);
     const card = await Card.findByIdAndRemove(req.params.cardId);
     if (card === null) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
@@ -56,7 +53,6 @@ module.exports.removeCard = async (req, res) => {
 
 module.exports.likeCard = async (req, res) => {
   try {
-    logNow('id: ', req.params.cardId);
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
@@ -82,7 +78,7 @@ module.exports.dislikeCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { $pull: { likes: req.user._id } },
       { new: true },
     );
     if (card === null) {
