@@ -7,7 +7,9 @@ const { HttpStatusCode } = require('../utils/HttpStatusCode');
 module.exports.createCard = async (req, res) => {
   try {
     const card = await Card.create({ ...req.body, owner: req.user._id });
-    const response = await res.status(HttpStatusCode.OK).send({ id: card._id });
+    logNow('card: ', card);
+    logNow('id: ', card._id);
+    const response = await res.status(HttpStatusCode.OK).send(card);
     return response;
   } catch (error) {
     logNow(error.name);
@@ -53,10 +55,10 @@ module.exports.removeCard = async (req, res) => {
 };
 
 module.exports.likeCard = async (req, res) => {
-  logNow('???', req.body);
+  logNow('💋', req.body);
 
   try {
-    logNow('!!!', req.params.cardId);
+    logNow('id: ', req.params.cardId);
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
       { $addToSet: { likes: req.user._id } },
