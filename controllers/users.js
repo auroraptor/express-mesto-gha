@@ -7,8 +7,7 @@ const { HttpStatusCode } = require('../utils/HttpStatusCode');
 module.exports.createUser = async (req, res) => {
   try {
     const user = await User.create({ ...req.body });
-    const response = await res.status(HttpStatusCode.OK).send({ data: user });
-    return response;
+    return res.status(HttpStatusCode.OK).send({ data: user });
   } catch (error) {
     logNow(error.name);
 
@@ -23,8 +22,7 @@ module.exports.createUser = async (req, res) => {
 module.exports.getUsers = async (req, res) => {
   try {
     const users = await User.find({});
-    const response = await res.send({ users });
-    return response;
+    return res.send({ users });
   } catch (error) {
     logNow(error.name);
 
@@ -38,8 +36,7 @@ module.exports.getUserById = async (req, res) => {
     if (user === null) {
       return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Пользователь с id ${req.params.id} не найден` });
     }
-    const response = await res.send({ data: user });
-    return response;
+    return res.send({ data: user });
   } catch (error) {
     logNow(error.name);
 
@@ -57,8 +54,7 @@ module.exports.updateUser = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    const response = await res.send({ ...req.body });
-    return response;
+    return res.send({ ...req.body });
   } catch (error) {
     logNow(error.name);
 
@@ -81,8 +77,7 @@ module.exports.updateAvatar = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    const response = await res.status(HttpStatusCode.OK).send({ ...req.body });
-    return response;
+    return res.status(HttpStatusCode.OK).send({ ...req.body });
   } catch (error) {
     logNow(error.name);
 

@@ -7,8 +7,7 @@ const { HttpStatusCode } = require('../utils/HttpStatusCode');
 module.exports.createCard = async (req, res) => {
   try {
     const card = await Card.create({ ...req.body, owner: req.user._id });
-    const response = await res.status(HttpStatusCode.OK).send(card);
-    return response;
+    return res.status(HttpStatusCode.OK).send(card);
   } catch (error) {
     logNow(error.name);
 
@@ -23,8 +22,7 @@ module.exports.createCard = async (req, res) => {
 module.exports.getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
-    const response = await res.status(HttpStatusCode.OK).send({ data: cards });
-    return response;
+    return res.status(HttpStatusCode.OK).send({ data: cards });
   } catch (error) {
     logNow(error.name);
 
@@ -38,8 +36,7 @@ module.exports.removeCard = async (req, res) => {
     if (card === null) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
     }
-    const response = await res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
-    return response;
+    return res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
   } catch (error) {
     logNow(error.name);
 
@@ -61,8 +58,7 @@ module.exports.likeCard = async (req, res) => {
     if (card === null) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
     }
-    const response = await res.status(HttpStatusCode.OK).send({ message: '❤️' });
-    return response;
+    return res.status(HttpStatusCode.OK).send({ message: '<3' });
   } catch (error) {
     logNow(error.name);
 
@@ -84,8 +80,7 @@ module.exports.dislikeCard = async (req, res) => {
     if (card === null) {
       return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Карточка с id ${req.params.id} не найдена` });
     }
-    const response = await res.status(HttpStatusCode.OK).send({ message: '💔' });
-    return response;
+    return res.status(HttpStatusCode.OK).send({ message: '</3' });
   } catch (error) {
     logNow(error.name);
 
