@@ -4,7 +4,7 @@
   "description": "[![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml) # Проект Mesto фронтенд + бэкенд",
   "main": "index.js",
   "scripts": {
-    "lint": "npx eslint",
+    "lint": "npx eslint .",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/auroraptor/express-mesto-gha.git"
   },
-  "author": "",
+  "author": "Auro Raptor",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/auroraptor/express-mesto-gha/issues"
