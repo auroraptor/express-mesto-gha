@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const User = require('../models/user');
 
@@ -11,8 +12,9 @@ module.exports.createUser = async (req, res) => {
       logNow('no email');
       throw new Error('401'); // TODO пришло время создавать свои классы ошибок
     }
-    const user = await User.create({ ...req.body });
-    return res.status(HttpStatusCode.OK).send({ data: user });
+    const hash = await bcrypt.hash(req.body.password, 17); // 𓃦 ⑰ ♡
+    const user = await User.create({ ...req.body, password: hash });
+    return res.status(HttpStatusCode.OK).send(user);
   } catch (error) {
     logNow(error.name);
     logNow(error.message);

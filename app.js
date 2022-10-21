@@ -13,7 +13,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/mestodb')
+mongoose.connect('mongodb://localhost:27017/mestodb', { autoIndex: true })
   .then(() => logNow('Connected to the server'))
   .catch((err) => logError(err));
 
