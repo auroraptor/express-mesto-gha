@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const regex = /`\w+`/gi;
@@ -98,5 +99,25 @@ module.exports.updateAvatar = async (req, res) => {
     }
 
     return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+  }
+};
+
+module.exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    // TODO сделать код проверки почты и пароля частью схемы User
+    const user = await User.findOne({ email });
+    const matched = bcrypt.compare(password, user.password);
+    if (!user || !matched) {
+      throw new Error('401 Unauthorized');
+    }
+    const token = jwt.send({ _id: user._id }, '🔐', { expiresIn: '7d' });
+    return res.status(HttpStatusCode.OK).cookie('jwt', token, {
+      maxAge: 3600000 * 24 * 7,
+      httpOnly: true,
+    });
+  } catch (error) {
+    logNow(error.name);
+    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Закрыть ворота! Неправильные почта или пароль.' });
   }
 };
