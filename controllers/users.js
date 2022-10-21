@@ -1,3 +1,4 @@
+const validator = require('validator');
 const User = require('../models/user');
 
 const regex = /`\w+`/gi;
@@ -6,13 +7,22 @@ const { HttpStatusCode } = require('../utils/HttpStatusCode');
 
 module.exports.createUser = async (req, res) => {
   try {
+    if (!validator.isEmail(req.body.email)) {
+      logNow('no email');
+      throw new Error('401'); // TODO пришло время создавать свои классы ошибок
+    }
     const user = await User.create({ ...req.body });
     return res.status(HttpStatusCode.OK).send({ data: user });
   } catch (error) {
     logNow(error.name);
+    logNow(error.message);
 
     if (error.name === 'ValidationError') {
       return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
+    }
+
+    if (error.message === '401') {
+      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'это временное решение, которое сообщает что поле email не прошло валидацию' });
     }
 
     return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
