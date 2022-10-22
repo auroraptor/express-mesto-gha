@@ -108,16 +108,17 @@ module.exports.login = async (req, res) => {
     // TODO сделать код проверки почты и пароля частью схемы User
     const user = await User.findOne({ email });
     const matched = bcrypt.compare(password, user.password);
-    if (!user || !matched) {
+    if (!user || matched === false) {
       throw new Error('401 Unauthorized');
     }
-    const token = jwt.send({ _id: user._id }, '🔐', { expiresIn: '7d' });
+    const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
     return res.status(HttpStatusCode.OK).cookie('jwt', token, {
       maxAge: 3600000 * 24 * 7,
       httpOnly: true,
-    }).send({ message: 'Этот токен безопасно записан в httpOnly куку' });
+    }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
   } catch (error) {
     logNow(error.name);
+    logNow(error);
     return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
   }
 };

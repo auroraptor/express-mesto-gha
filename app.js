@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const expressWinston = require('express-winston');
 const router = require('./routes');
+const { login, createUser } = require('./controllers/users');
 const { logNow, logError } = require('./utils/log');
 const { logger } = require('./utils/logger');
 const { HttpStatusCode } = require('./utils/HttpStatusCode');
@@ -28,6 +29,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.post('/signin', login);
+app.post('/signup', createUser);
 app.use('/', router);
 
 // express-winston errorLogger makes sense AFTER the router.
