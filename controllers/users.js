@@ -115,9 +115,9 @@ module.exports.login = async (req, res) => {
     return res.status(HttpStatusCode.OK).cookie('jwt', token, {
       maxAge: 3600000 * 24 * 7,
       httpOnly: true,
-    });
+    }).send({ message: 'Этот токен безопасно записан в httpOnly куку' });
   } catch (error) {
     logNow(error.name);
-    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Закрыть ворота! Неправильные почта или пароль.' });
+    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
   }
 };
