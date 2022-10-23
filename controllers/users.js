@@ -105,10 +105,9 @@ module.exports.updateAvatar = async (req, res) => {
 module.exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    // TODO сделать код проверки почты и пароля частью схемы User
     const user = await User.findOne({ email });
-    const matched = bcrypt.compare(password, user.password);
-    if (!user || matched === false) {
+    const matched = await bcrypt.compare(password, user.password);
+    if (!user || !matched) {
       throw new Error('401 Unauthorized');
     }
     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
@@ -117,8 +116,6 @@ module.exports.login = async (req, res) => {
       httpOnly: true,
     }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
   } catch (error) {
-    logNow(error.name);
-    logNow(error);
     return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
   }
 };
