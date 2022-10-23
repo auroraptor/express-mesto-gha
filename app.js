@@ -23,7 +23,7 @@ app.use(expressWinston.logger(logger));
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '634aa867af58fa7ff431ff6f',
+    _id: '63528855fccd5cb7d7af2099',
   };
 
   next();
