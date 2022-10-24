@@ -117,7 +117,7 @@ module.exports.updateAvatar = async (req, res) => {
 module.exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
     const matched = await bcrypt.compare(password, user.password);
     if (!user || !matched) {
       throw new Error('401 Unauthorized');
