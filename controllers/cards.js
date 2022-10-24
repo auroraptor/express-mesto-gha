@@ -32,18 +32,20 @@ module.exports.getCards = async (req, res) => {
 
 module.exports.removeCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.cardId);
+    const card = await Card.findById(req.params.cardId);
     if (card === null) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
     }
+    if (card.owner.toHexString() !== req.user._id) {
+      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Можно удалять только свои карточки' });
+    }
+    await Card.findByIdAndRemove(req.params.cardId);
     return res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
   } catch (error) {
     logNow(error.name);
-
     if (error.name === 'CastError') {
       return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
     }
-
     return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
   }
 };
