@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const expressWinston = require('express-winston');
 const router = require('./routes');
+const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const { logNow, logError } = require('./utils/log');
 const { logger } = require('./utils/logger');
@@ -21,17 +22,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb', { autoIndex: true })
 // express-winston logger makes sense BEFORE the router
 app.use(expressWinston.logger(logger));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63528855fccd5cb7d7af2099',
-  };
-
-  next();
-});
-
 app.post('/signin', login);
 app.post('/signup', createUser);
-app.use('/', router);
+app.use('/', auth, router);
 
 // express-winston errorLogger makes sense AFTER the router.
 app.use(expressWinston.errorLogger(logger));

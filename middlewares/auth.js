@@ -1,20 +1,23 @@
 const jwt = require('jsonwebtoken');
-const HttpStatusCode = require('../utils/HttpStatusCode');
-const baerer = require('../utils/regexps');
+const { HttpStatusCode } = require('../utils/HttpStatusCode');
+const { log } = require('../utils/log');
 
-module.export = (req, res, next) => {
-  const { authorization } = req.headers;
-  if (!authorization || !authorization.startWith(baerer)) {
-    return res.status(HttpStatusCode.UNATHORIZED).send({ message: 'Необходима авторизация' });
+module.exports = (req, res, next) => {
+  const { cookie } = req.headers;
+  if (!cookie || !cookie.startsWith('jwt=')) {
+    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
   }
-  const token = authorization.replace(baerer, '');
+  const token = cookie.replace('jwt=', '');
   let payload;
   try {
     payload = jwt.verify(token, '🔐');
   } catch (err) {
-    return res.status(HttpStatusCode.UNATHORIZED).send({ message: 'Необходима авторизация' });
+    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
   }
+  log('payload: ', payload);
+  log('[BEFORE CHANGE] ', req.user);
   req.user = payload;
+  log('[THE RESULT IS] ', req.user);
   return next();
 };
 

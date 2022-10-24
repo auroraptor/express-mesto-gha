@@ -1,3 +1,4 @@
 const baerer = /Baerer /;
+const cookieJwt = /jwt=/;
 
-module.exports = { baerer };
+module.exports = { baerer, cookieJwt };
