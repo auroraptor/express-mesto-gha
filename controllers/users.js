@@ -131,16 +131,15 @@ module.exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
-    const matched = await bcrypt.compare(password, user.password);
+    const matched = bcrypt.compare(password, user.password);
     if (!user || !matched) {
-      throw new Error('401 Unauthorized');
+      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
     }
     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
-    // return res.status(HttpStatusCode.OK).cookie('jwt', token, {
-    //   maxAge: 3600000 * 24 * 7,
-    //   httpOnly: true,
-    // }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
-    return res.status(HttpStatusCode.OK).send({ token });
+    return res.status(HttpStatusCode.OK).cookie('jwt', token, {
+      maxAge: 3600000 * 24 * 7,
+      httpOnly: true,
+    }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
   } catch (error) {
     return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
   }
