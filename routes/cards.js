@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   createCard, getCards, removeCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
-const { url, id } = require('../utils/regexps');
+const { url } = require('../utils/regexps');
 
 router.get('/', getCards);
 
@@ -15,26 +15,20 @@ router.post('/', celebrate({
 }), createCard);
 
 router.delete('/:cardId', celebrate({
-  body: Joi.object().keys({
-    params: Joi.object().keys({
-      cardId: Joi.string().pattern(id).length(24),
-    }),
+  params: Joi.object().keys({
+    cardId: Joi.string().pattern(/[a-f0-9]{24,24}/).length(24),
   }),
 }), removeCard);
 
 router.put('/:cardId/likes', celebrate({
-  body: Joi.object().keys({
-    params: Joi.object().keys({
-      cardId: Joi.string().pattern(id).length(24),
-    }),
+  params: Joi.object().keys({
+    cardId: Joi.string().pattern(/[a-f0-9]{24,24}/).length(24),
   }),
 }), likeCard);
 
 router.delete('/:cardId/likes', celebrate({
-  body: Joi.object().keys({
-    params: Joi.object().keys({
-      cardId: Joi.string().pattern(id).length(24),
-    }),
+  params: Joi.object().keys({
+    cardId: Joi.string().pattern(/[a-f0-9]{24,24}/).length(24),
   }),
 }), dislikeCard);
 

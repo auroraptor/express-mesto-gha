@@ -58,11 +58,11 @@ module.exports.getUsers = async (req, res) => {
 
 module.exports.getCurrentUser = async (req, res) => {
   logNow('user._id', req.user._id);
-  logNow('params', req.params);
+  logNow('params', req.user);
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Пользователь с id ${req.user._id} не найден` });
     }
     return res.status(HttpStatusCode.OK).send(user);
   } catch (err) {

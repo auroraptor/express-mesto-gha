@@ -31,13 +31,14 @@ module.exports.getCards = async (req, res) => {
 };
 
 module.exports.removeCard = async (req, res) => {
+  logNow(req.params.cardId);
   try {
     const card = await Card.findById(req.params.cardId);
     if (card === null) {
       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
     }
     if (card.owner.toHexString() !== req.user._id) {
-      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Можно удалять только свои карточки' });
+      return res.status(HttpStatusCode.FORBIDDEN).send({ message: 'Можно удалять только свои карточки' });
     }
     await Card.findByIdAndRemove(req.params.cardId);
     return res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
@@ -51,7 +52,8 @@ module.exports.removeCard = async (req, res) => {
 };
 
 module.exports.likeCard = async (req, res) => {
-  logNow(req.params);
+  logNow('params: ', req.params);
+  logNow('cardId likes', req.params.cardId);
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
