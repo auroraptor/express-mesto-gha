@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUsers, getUserById, updateAvatar, updateUser, getCurrentUser,
 } = require('../controllers/users');
-const { url } = require('../utils/regexps');
+const { url, id } = require('../utils/regexps');
 
 router.get('/me', getCurrentUser);
 router.get('/', getUsers);
@@ -11,7 +11,7 @@ router.get('/', getUsers);
 router.get('/:id', celebrate({
   body: Joi.object().keys({
     params: Joi.object().keys({
-      id: Joi.string().hex().length(24),
+      id: Joi.string().pattern(id).length(24),
     }),
   }),
 }), getUserById);

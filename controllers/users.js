@@ -18,6 +18,10 @@ module.exports.createUser = async (req, res) => {
     const {
       name, about, avatar, _id,
     } = user;
+    logNow('[USER]: ', user);
+    logNow({
+      name, about, avatar, _id,
+    });
     return res.status(HttpStatusCode.OK).send({
       name, about, avatar, _id,
     });
