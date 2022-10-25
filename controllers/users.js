@@ -136,10 +136,11 @@ module.exports.login = async (req, res) => {
       throw new Error('401 Unauthorized');
     }
     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
-    return res.status(HttpStatusCode.OK).cookie('jwt', token, {
-      maxAge: 3600000 * 24 * 7,
-      httpOnly: true,
-    }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
+    // return res.status(HttpStatusCode.OK).cookie('jwt', token, {
+    //   maxAge: 3600000 * 24 * 7,
+    //   httpOnly: true,
+    // }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
+    return res.status(HttpStatusCode.OK).send({ token });
   } catch (error) {
     return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
   }
