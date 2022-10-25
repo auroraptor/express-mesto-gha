@@ -15,7 +15,12 @@ module.exports.createUser = async (req, res) => {
     }
     const hash = await bcrypt.hash(req.body.password, 17); // 𓃦 ⑰ ♡
     const user = await User.create({ ...req.body, password: hash });
-    return res.status(HttpStatusCode.OK).send(user);
+    const {
+      name, about, avatar, _id,
+    } = user;
+    return res.status(HttpStatusCode.OK).send({
+      name, about, avatar, _id,
+    });
   } catch (error) {
     logNow(error.name);
     logNow(error.message);
@@ -26,6 +31,10 @@ module.exports.createUser = async (req, res) => {
 
     if (error.message === '401') {
       return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'это временное решение, которое сообщает что поле email не прошло валидацию' });
+    }
+
+    if (error.name === 'MongoServerError' || error.message.includes('11000')) {
+      return res.status(HttpStatusCode.CONFLICT).send({ message: `${req.body.email} уже зарегестрирован` });
     }
 
     return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
