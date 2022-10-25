@@ -51,6 +51,7 @@ module.exports.removeCard = async (req, res) => {
 };
 
 module.exports.likeCard = async (req, res) => {
+  logNow(req.params);
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
