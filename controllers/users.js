@@ -57,6 +57,8 @@ module.exports.getUsers = async (req, res) => {
 };
 
 module.exports.getCurrentUser = async (req, res) => {
+  logNow('user._id', req.user._id);
+  logNow('params', req.params);
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -69,6 +71,8 @@ module.exports.getCurrentUser = async (req, res) => {
 };
 
 module.exports.getUserById = async (req, res) => {
+  logNow('user._id', req.user._id);
+
   try {
     const user = await User.findById(req.params.id);
     if (user === null) {
@@ -131,8 +135,11 @@ module.exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
+    }
     const matched = bcrypt.compare(password, user.password);
-    if (!user || !matched) {
+    if (!matched) {
       return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
     }
     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
@@ -141,6 +148,6 @@ module.exports.login = async (req, res) => {
       httpOnly: true,
     }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
   } catch (error) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
   }
 };
