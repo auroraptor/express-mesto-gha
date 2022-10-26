@@ -43,7 +43,7 @@ module.exports.removeCard = async (req, res, next) => {
       next(new HTTP403Error('Можно удалять только свои карточки'));
       return;
     }
-    await Card.delete(req.params.cardId);
+    await card.delete();
     res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
   } catch (err) {
     next(err);
