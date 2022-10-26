@@ -48,7 +48,7 @@ app.use('/', auth, router);
 // express-winston errorLogger makes sense AFTER the router.
 app.use(expressWinston.errorLogger(logger));
 
-app.use(errors()); // обработчик ошибок celebrate
+app.use(errors());
 
 app.use((err, req, res, next) => {
   errorHandler(err, req, res, next);
