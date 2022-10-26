@@ -49,7 +49,7 @@ module.exports.likeCard = async (req, res, next) => {
       { new: true },
     );
     if (card === null) {
-      next(new HTTP404Error(`Карточка с id ${req.params.cardId} не найдена`));
+      next(new HTTP404Error('some error'));
       return;
     }
     res.status(HttpStatusCode.OK).send({ message: '<3' });
@@ -57,6 +57,28 @@ module.exports.likeCard = async (req, res, next) => {
     next(error);
   }
 };
+
+// module.exports.likeCard = async (req, res) => {
+//   try {
+//     const card = await Card.findByIdAndUpdate(
+//       req.params.cardId,
+//       { $addToSet: { likes: req.user._id } },
+//       { new: true },
+//     );
+//     if (card === null) {
+//       return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
+//     }
+//     return res.status(HttpStatusCode.OK).send({ message: '<3' });
+//   } catch (error) {
+//     // logNow(error.name);
+
+//     if (error.name === 'CastError') {
+//       return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
+//     }
+
+//     return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+//   }
+// };
 
 module.exports.dislikeCard = async (req, res, next) => {
   try {
