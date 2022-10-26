@@ -34,21 +34,23 @@ module.exports.getCards = async (req, res) => {
 };
 
 module.exports.removeCard = async (req, res, next) => {
-  const card = await Card.findById(req.params.cardId);
-  if (card === null) {
-    next(new HTTP404Error(`Карточка с id ${req.params.cardId} не найдена`));
-    return;
-  } if (card.owner.toHexString() !== req.user._id) {
-    next(new HTTP403Error('Можно удалять только свои карточки'));
-    return;
+  try {
+    const card = await Card.findById(req.params.cardId);
+    if (card === null) {
+      next(new HTTP404Error(`Карточка с id ${req.params.cardId} не найдена`));
+      return;
+    } if (card.owner.toHexString() !== req.user._id) {
+      next(new HTTP403Error('Можно удалять только свои карточки'));
+      return;
+    }
+    await Card.delete(req.params.cardId);
+    res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
+  } catch (err) {
+    next(err);
   }
-  await Card.delete(req.params.cardId);
-  res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
 };
 
 module.exports.likeCard = async (req, res) => {
-  logNow('params: ', req.params);
-  logNow('cardId likes', req.params.cardId);
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
