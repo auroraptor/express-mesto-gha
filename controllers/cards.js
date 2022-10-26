@@ -1,24 +1,35 @@
 const Card = require('../models/card');
 
+const regex = /`\w+`/gi;
+const { logNow } = require('../utils/log');
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
 const { HTTP404Error } = require('../errors/HTTP404Error');
 const { HTTP403Error } = require('../errors/HTTP403Error');
+// const { APIError } = require('../errors/APIError');
 
-module.exports.createCard = async (req, res, next) => {
+module.exports.createCard = async (req, res) => {
   try {
     const card = await Card.create({ ...req.body, owner: req.user._id });
-    res.status(HttpStatusCode.OK).send(card);
+    return res.status(HttpStatusCode.OK).send(card);
   } catch (error) {
-    next(error);
+    logNow(error.name);
+
+    if (error.name === 'ValidationError') {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
+    }
+
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
   }
 };
 
-module.exports.getCards = async (req, res, next) => {
+module.exports.getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
-    res.status(HttpStatusCode.OK).send({ data: cards });
+    return res.status(HttpStatusCode.OK).send({ data: cards });
   } catch (error) {
-    next(error);
+    logNow(error.name);
+
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
   }
 };
 
@@ -39,7 +50,7 @@ module.exports.removeCard = async (req, res, next) => {
   }
 };
 
-module.exports.likeCard = async (req, res, next) => {
+module.exports.likeCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -47,16 +58,21 @@ module.exports.likeCard = async (req, res, next) => {
       { new: true },
     );
     if (card === null) {
-      next(new HTTP404Error(`Карточка с id ${req.params.cardId} не найдена`));
-      return;
+      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.id} не найдена` });
     }
-    res.status(HttpStatusCode.OK).send({ message: '<3' });
+    return res.status(HttpStatusCode.OK).send({ message: '<3' });
   } catch (error) {
-    next(error);
+    logNow(error.name);
+
+    if (error.name === 'CastError') {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
+    }
+
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
   }
 };
 
-module.exports.dislikeCard = async (req, res, next) => {
+module.exports.dislikeCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -64,11 +80,16 @@ module.exports.dislikeCard = async (req, res, next) => {
       { new: true },
     );
     if (card === null) {
-      next(new HTTP404Error(`Карточка с id ${req.params.cardId} не найдена`));
-      return;
+      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Карточка с id ${req.params.id} не найдена` });
     }
-    res.status(HttpStatusCode.OK).send({ message: '</3' });
+    return res.status(HttpStatusCode.OK).send({ message: '</3' });
   } catch (error) {
-    next(error);
+    logNow(error.name);
+
+    if (error.name === 'CastError') {
+      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
+    }
+
+    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
   }
 };
