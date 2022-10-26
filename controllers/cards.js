@@ -49,7 +49,7 @@ module.exports.likeCard = async (req, res, next) => {
       { new: true },
     );
     if (card === null) {
-      next(new HTTP404Error('some error'));
+      next(new HTTP404Error(`Карточка с id ${req.params.id} не найдена`));
       return;
     }
     res.status(HttpStatusCode.OK).send({ message: '<3' });
