@@ -7,18 +7,19 @@ const { HTTP404Error } = require('../errors/HTTP404Error');
 const { HTTP403Error } = require('../errors/HTTP403Error');
 // const { APIError } = require('../errors/APIError');
 
-module.exports.createCard = async (req, res) => {
+module.exports.createCard = async (req, res, next) => {
   try {
     const card = await Card.create({ ...req.body, owner: req.user._id });
-    return res.status(HttpStatusCode.OK).send(card);
+    res.status(HttpStatusCode.OK).send(card);
   } catch (error) {
-    logNow(error.name);
+    // logNow(error.name);
 
-    if (error.name === 'ValidationError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
-    }
+    // if (error.name === 'ValidationError') {
+    //   return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
+    // }
 
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    // return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
 
