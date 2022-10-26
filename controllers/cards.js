@@ -3,6 +3,9 @@ const Card = require('../models/card');
 const regex = /`\w+`/gi;
 const { logNow } = require('../utils/log');
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
+const { HTTP404Error } = require('../errors/HTTP404Error');
+const { HTTP403Error } = require('../errors/HTTP403Error');
+// const { APIError } = require('../errors/APIError');
 
 module.exports.createCard = async (req, res) => {
   try {
@@ -30,25 +33,17 @@ module.exports.getCards = async (req, res) => {
   }
 };
 
-module.exports.removeCard = async (req, res) => {
-  logNow(req.params.cardId);
-  try {
-    const card = await Card.findById(req.params.cardId);
-    if (card === null) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Карточка с id ${req.params.cardId} не найдена` });
-    }
-    if (card.owner.toHexString() !== req.user._id) {
-      return res.status(HttpStatusCode.FORBIDDEN).send({ message: 'Можно удалять только свои карточки' });
-    }
-    await Card.findByIdAndRemove(req.params.cardId);
-    return res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
-  } catch (error) {
-    logNow(error.name);
-    if (error.name === 'CastError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
-    }
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+module.exports.removeCard = async (req, res, next) => {
+  const card = await Card.findById(req.params.cardId);
+  if (card === null) {
+    next(new HTTP404Error(`Карточка с id ${req.params.cardId} не найдена`));
+    return;
+  } if (card.owner.toHexString() !== req.user._id) {
+    next(new HTTP403Error('Можно удалять только свои карточки'));
+    return;
   }
+  await Card.delete(req.params.cardId);
+  res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
 };
 
 module.exports.likeCard = async (req, res) => {

@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
-const { log } = require('../utils/log');
 
 module.exports = (req, res, next) => {
   const { cookie } = req.headers;
@@ -14,10 +13,7 @@ module.exports = (req, res, next) => {
   } catch (err) {
     return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
   }
-  log('payload: ', payload);
-  log('[BEFORE CHANGE] ', req.user);
   req.user = payload;
-  log('[THE RESULT IS] ', req.user);
   return next();
 };
 

@@ -1,12 +1,8 @@
 class BaseError extends Error {
-  constructor(name, httpCode, description) {
-    super(description);
-    Object.setPrototypeOf(this, new.target.prototype);
-
+  constructor(name, httpCode, message) {
+    super(message);
     this.name = name;
-    this.httpCode = httpCode;
-
-    Error.captureStackTrace(this);
+    this.statusCode = httpCode;
   }
 }
 
