@@ -36,8 +36,8 @@ module.exports.removeCard = async (req, res, next) => {
     }
     await card.delete();
     res.status(HttpStatusCode.OK).send({ message: `Карточка с id ${req.params.cardId} удалена` });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
