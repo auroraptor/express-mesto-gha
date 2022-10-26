@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 
-const regex = /`\w+`/gi;
+// const regex = /`\w+`/gi;
 const { logNow } = require('../utils/log');
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
 const { HTTP404Error } = require('../errors/HTTP404Error');
@@ -15,6 +15,7 @@ module.exports.createCard = async (req, res, next) => {
     // logNow(error.name);
 
     // if (error.name === 'ValidationError') {
+    // eslint-disable-next-line max-len
     //   return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
     // }
 
