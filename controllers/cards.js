@@ -1,31 +1,17 @@
 const Card = require('../models/card');
 
 // const regex = /`\w+`/gi;
-const { logNow } = require('../utils/log');
+// const { logNow } = require('../utils/log');
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
 const { HTTP404Error } = require('../errors/HTTP404Error');
 const { HTTP403Error } = require('../errors/HTTP403Error');
 
-module.exports.createCard = async (req, res) => {
+module.exports.createCard = async (req, res, next) => {
   try {
     const card = await Card.create({ ...req.body, owner: req.user._id });
-    return res.status(HttpStatusCode.OK).send(card);
+    res.status(HttpStatusCode.OK).send(card);
   } catch (error) {
-    // logNow(error.name);
-
-    // if (error.name === 'ValidationError') {
-    // eslint-disable-next-line max-len
-    //   return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
-    // }
-
-    // return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
-    logNow(error.name);
-
-    if (error.name === 'ValidationError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
-    }
-
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
 
