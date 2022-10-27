@@ -1,13 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const expressWinston = require('express-winston');
+// const expressWinston = require('express-winston');
 const { errors, celebrate, Joi } = require('celebrate');
 const router = require('./routes');
 const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const { logNow, logError } = require('./utils/log');
-const { logger } = require('./utils/logger');
+// const { logger } = require('./utils/logger');
 const { url, password } = require('./utils/regexps');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { HTTP404Error } = require('./errors/HTTP404Error');
@@ -23,7 +23,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', { autoIndex: true })
   .catch((err) => logError(err));
 
 // express-winston logger makes sense BEFORE the router
-app.use(expressWinston.logger(logger));
+// app.use(expressWinston.logger(logger));
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -45,7 +45,7 @@ app.post('/signup', celebrate({
 app.use('/', auth, router);
 
 // express-winston errorLogger makes sense AFTER the router.
-app.use(expressWinston.errorLogger(logger));
+// app.use(expressWinston.errorLogger(logger));
 
 app.use(errors());
 
