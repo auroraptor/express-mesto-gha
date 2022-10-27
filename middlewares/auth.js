@@ -1,20 +1,21 @@
 const jwt = require('jsonwebtoken');
-const { HttpStatusCode } = require('../utils/HttpStatusCode');
+const { HTTP401Error } = require('../errors/HTTP401Error');
+const { HTTP403Error } = require('../errors/HTTP403Error');
 
 module.exports = (req, res, next) => {
   const { cookie } = req.headers;
   if (!cookie || !cookie.startsWith('jwt=')) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+    next(new HTTP403Error('Необходима авторизация'));
+    return;
   }
   const token = cookie.replace('jwt=', '');
   let payload;
   try {
     payload = jwt.verify(token, '🔐');
   } catch (err) {
-    return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+    next(new HTTP401Error('C токеном что-то не так'));
+    return;
   }
   req.user = payload;
-  return next();
+  next();
 };
-
-// Если с токеном что-то не так, мидлвэр должен вернуть ошибку 401;
