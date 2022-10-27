@@ -1,7 +1,5 @@
 const Card = require('../models/card');
 
-// const regex = /`\w+`/gi;
-// const { logNow } = require('../utils/log');
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
 const { HTTP404Error } = require('../errors/HTTP404Error');
 const { HTTP403Error } = require('../errors/HTTP403Error');
