@@ -5,7 +5,6 @@ const User = require('../models/user');
 
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
 const { HTTP401Error } = require('../errors/HTTP401Error');
-const { HTTP403Error } = require('../errors/HTTP403Error');
 const { HTTP409Error } = require('../errors/HTTP409Error');
 const { HTTP404Error } = require('../errors/HTTP404Error');
 
@@ -93,11 +92,11 @@ module.exports.login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      next(new HTTP403Error('Неправильные почта или пароль'));
+      next(new HTTP401Error('Неправильные почта или пароль'));
     }
     const matched = bcrypt.compare(password, user.password);
     if (!matched) {
-      next(new HTTP403Error('Неправильные почта или пароль'));
+      next(new HTTP401Error('Неправильные почта или пароль'));
     }
     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
     res.status(HttpStatusCode.OK).cookie('jwt', token, {
