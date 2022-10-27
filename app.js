@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-escape */
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -48,7 +47,7 @@ app.use('/', auth, router);
 // express-winston errorLogger makes sense AFTER the router.
 app.use(expressWinston.errorLogger(logger));
 
-app.use(errors()); // обработчик ошибок celebrate
+app.use(errors());
 
 app.use('*', (req, res, next) => {
   next(new HTTP404Error(`По адресу ${req.baseUrl} ничего не нашлось`));
