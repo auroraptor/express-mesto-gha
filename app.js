@@ -9,9 +9,9 @@ const auth = require('./middlewares/auth');
 const { login, createUser } = require('./controllers/users');
 const { logNow, logError } = require('./utils/log');
 const { logger } = require('./utils/logger');
-const { HttpStatusCode } = require('./utils/HttpStatusCode');
 const { url, password } = require('./utils/regexps');
 const { errorHandler } = require('./middlewares/errorHandler');
+const { HTTP404Error } = require('./errors/HTTP404Error');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -50,12 +50,12 @@ app.use(expressWinston.errorLogger(logger));
 
 app.use(errors()); // обработчик ошибок celebrate
 
-app.use((err, req, res, next) => {
-  errorHandler(err, req, res, next);
+app.use('*', (req, res, next) => {
+  next(new HTTP404Error(`По адресу ${req.baseUrl} ничего не нашлось`));
 });
 
-app.use('*', (req, res) => {
-  res.status(HttpStatusCode.NOT_FOUND).send({ message: `По адресу ${req.baseUrl} ничего не нашлось` });
+app.use((err, req, res, next) => {
+  errorHandler(err, req, res, next);
 });
 
 app.listen(PORT, () => {
