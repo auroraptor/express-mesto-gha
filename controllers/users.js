@@ -3,151 +3,107 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const regex = /`\w+`/gi;
-const { logNow } = require('../utils/log');
 const { HttpStatusCode } = require('../utils/HttpStatusCode');
+const { HTTP403Error } = require('../errors/HTTP403Error');
+const { HTTP409Error } = require('../errors/HTTP409Error');
+const { HTTP404Error } = require('../errors/HTTP404Error');
 
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res, next) => {
   try {
     if (!validator.isEmail(req.body.email)) {
-      logNow('no email');
-      throw new Error('401'); // TODO пришло время создавать свои классы ошибок
+      next(new HTTP403Error('Необходима авторизация'));
     }
     const hash = await bcrypt.hash(req.body.password, 17); // 𓃦 ⑰ ♡
     const user = await User.create({ ...req.body, password: hash });
     const {
       name, about, avatar, _id,
     } = user;
-    logNow('[USER]: ', user);
-    logNow({
-      name, about, avatar, _id,
-    });
-    return res.status(HttpStatusCode.OK).send({
+    res.status(HttpStatusCode.OK).send({
       name, about, avatar, _id,
     });
   } catch (error) {
-    logNow(error.name);
-    logNow(error.message);
-
-    if (error.name === 'ValidationError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
-    }
-
-    if (error.message === '401') {
-      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'это временное решение, которое сообщает что поле email не прошло валидацию' });
-    }
-
     if (error.name === 'MongoServerError' || error.message.includes('11000')) {
-      return res.status(HttpStatusCode.CONFLICT).send({ message: `${req.body.email} уже зарегестрирован` });
+      next(new HTTP409Error(`${req.body.email} уже зарегестрирован`));
     }
-
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
 
-module.exports.getUsers = async (req, res) => {
+module.exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
-    return res.send({ users });
+    res.send({ users });
   } catch (error) {
-    logNow(error.name);
-
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
 
-module.exports.getCurrentUser = async (req, res) => {
-  logNow('user._id', req.user._id);
-  logNow('params', req.user);
+module.exports.getCurrentUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      return res.status(HttpStatusCode.NOT_FOUND).send({ message: `Пользователь с id ${req.user._id} не найден` });
+      next(new HTTP404Error(`Пользователь с id ${req.user._id} не найден`));
     }
-    return res.status(HttpStatusCode.OK).send(user);
-  } catch (err) {
-    return err;
+    res.status(HttpStatusCode.OK).send(user);
+  } catch (error) {
+    next(error);
   }
 };
 
-module.exports.getUserById = async (req, res) => {
-  logNow('user._id', req.user._id);
-
+module.exports.getUserById = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
     if (user === null) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({ message: `Пользователь с id ${req.params.id} не найден` });
+      next(new HTTP404Error(`Пользователь с id ${req.user._id} не найден`));
     }
-    return res.send({ data: user });
+    res.send({ data: user });
   } catch (error) {
-    logNow(error.name);
-
-    if (error.name === 'CastError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
-    }
-
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
 
-module.exports.updateUser = async (req, res) => {
+module.exports.updateUser = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.user._id, req.body, {
       new: true,
       runValidators: true,
     });
-    return res.send({ ...req.body });
+    res.send({ ...req.body });
   } catch (error) {
-    logNow(error.name);
-
-    if (error.name === 'ValidationError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
-    }
-
-    if (error.name === 'CastError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: 'Некорректный запрос' });
-    }
-
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
 
-module.exports.updateAvatar = async (req, res) => {
+module.exports.updateAvatar = async (req, res, next) => {
   try {
     const { _id } = req.user;
     await User.findByIdAndUpdate(_id, req.body, {
       new: true,
       runValidators: true,
     });
-    return res.status(HttpStatusCode.OK).send({ ...req.body });
+    res.status(HttpStatusCode.OK).send({ ...req.body });
   } catch (error) {
-    logNow(error.name);
-
-    if (error.name === 'ValidationError') {
-      return res.status(HttpStatusCode.BAD_REQUEST).send({ message: `Ошибка валидации данных: ${error.message.match(regex)}` });
-    }
-
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
 
-module.exports.login = async (req, res) => {
+module.exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
+      next(new HTTP403Error('Неправильные почта или пароль'));
     }
     const matched = bcrypt.compare(password, user.password);
     if (!matched) {
-      return res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Неправильные почта или пароль.' });
+      next(new HTTP403Error('Неправильные почта или пароль'));
     }
     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
-    return res.status(HttpStatusCode.OK).cookie('jwt', token, {
+    res.status(HttpStatusCode.OK).cookie('jwt', token, {
       maxAge: 3600000 * 24 * 7,
       httpOnly: true,
     }).send({ message: 'Этот токен безопасно сохранен в httpOnly куку' }).end();
   } catch (error) {
-    return res.status(HttpStatusCode.INTERNAL_SERVER).send({ message: 'Тут что-то не так' });
+    next(error);
   }
 };
