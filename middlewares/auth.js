@@ -5,7 +5,7 @@ const { HTTP403Error } = require('../errors/HTTP403Error');
 module.exports = (req, res, next) => {
   const { cookie } = req.headers;
   if (!cookie || !cookie.startsWith('jwt=')) {
-    next(new HTTP403Error('Необходима авторизация'));
+    next(new HTTP401Error('Необходима авторизация'));
     return;
   }
   const token = cookie.replace('jwt=', '');
@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, '🔐');
   } catch (err) {
-    next(new HTTP401Error('C токеном что-то не так'));
+    next(new HTTP403Error('C токеном что-то не так'));
     return;
   }
   req.user = payload;
