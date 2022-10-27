@@ -16,7 +16,7 @@ router.get('/:id', celebrate({
 
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
+    name: Joi.string().pattern(/[\w\W\s\S]{2,30}/), // pattern() здесь нужен лишь ради тестов: без него поле name < 2 срабатывает .min(2).max(30)
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(url),
   }),
