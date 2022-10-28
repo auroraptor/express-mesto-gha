@@ -55,6 +55,7 @@ module.exports.getUserById = async (req, res, next) => {
     const user = await User.findById(req.params.id);
     if (user === null) {
       next(new HTTP404Error(`Пользователь с id ${req.params.id} не найден`));
+      return;
     }
     res.send({ data: user });
   } catch (error) {
