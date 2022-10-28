@@ -14,7 +14,8 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, '🔐');
   } catch (err) {
     next(new HTTP403Error('C токеном что-то не так'));
-    return;
+    // return;
+    // next(err);
   }
   req.user = payload;
   next();
