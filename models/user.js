@@ -31,21 +31,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = async function (email, password) {
-  try {
-    const user = await this.findOne({ email }).select('+password');
-    if (!user) {
-      throw new Error('Неправильные почта или пароль.');
-    }
-    const matched = await bcrypt.compare(password, user.password);
-    if (!matched) {
-      throw new Error('Неправильные почта или пароль.');
-    }
-    return user;
-  } catch (err) {
-    return err;
-  }
-};
-
 module.exports = mongoose.model('user', userSchema);
