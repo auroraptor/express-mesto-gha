@@ -15,7 +15,6 @@ module.exports = (req, res, next) => {
   } catch (err) {
     next(new HTTP403Error('C токеном что-то не так'));
     // return;
-    // next(err);
   }
   req.user = payload;
   next();
