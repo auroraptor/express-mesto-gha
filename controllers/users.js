@@ -12,6 +12,7 @@ module.exports.createUser = async (req, res, next) => {
   try {
     if (!validator.isEmail(req.body.email)) {
       next(new HTTP401Error('Необходима авторизация'));
+      return;
     }
     const hash = await bcrypt.hash(req.body.password, 17); // 𓃦 ⑰ ♡
     const user = await User.create({ ...req.body, password: hash });
@@ -24,6 +25,7 @@ module.exports.createUser = async (req, res, next) => {
   } catch (error) {
     if (error.name === 'MongoServerError' || error.message.includes('11000')) {
       next(new HTTP409Error(`${req.body.email} уже зарегестрирован`));
+      return;
     }
     next(error);
   }
@@ -43,6 +45,7 @@ module.exports.getCurrentUser = async (req, res, next) => {
     const user = await User.findById(req.user._id);
     if (!user) {
       next(new HTTP404Error(`Пользователь с id ${req.user._id} не найден`));
+      return;
     }
     res.status(HttpStatusCode.OK).send(user);
   } catch (error) {
@@ -94,10 +97,12 @@ module.exports.login = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       next(new HTTP401Error('Неправильные почта или пароль'));
+      return;
     }
     const matched = bcrypt.compare(password, user.password);
     if (!matched) {
       next(new HTTP401Error('Неправильные почта или пароль'));
+      return;
     }
     const token = jwt.sign({ _id: user._id }, '🔐', { expiresIn: '7d' });
     res.status(HttpStatusCode.OK).cookie('jwt', token, {
