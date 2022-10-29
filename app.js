@@ -47,9 +47,7 @@ app.use('*', (req, res, next) => {
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  errorHandler(err, req, res, next);
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   logNow(`App listening on port ${PORT}`);
