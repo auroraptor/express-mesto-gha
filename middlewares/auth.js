@@ -8,6 +8,7 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, '🔐');
   } catch (err) {
     res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+    return;
   }
   req.user = payload;
   next();
