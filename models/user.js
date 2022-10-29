@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
       validator(url) {
         return validator.isURL(url) === true;
       },
-      message: 'Is not a valid URL',
+      message: '{VALUE} is not a valid URL',
     },
   },
   email: {
@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
       validator(email) {
         return validator.isEmail(email) === true;
       },
-      message: 'Is not a valid email address',
+      message: '{VALUE} is not a valid email address',
     },
   },
   password: {
