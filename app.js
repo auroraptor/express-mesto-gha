@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 const router = require('./routes');
 const auth = require('./middlewares/auth');
@@ -15,6 +16,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', { autoIndex: true })
   .then(() => logNow('Connected to the server'))
