@@ -41,11 +41,11 @@ app.post('/signup', celebrate({
 
 app.use('/', auth, router);
 
-app.use(errors());
-
 app.use('*', (req, res, next) => {
   next(new HTTP404Error(`По адресу ${req.baseUrl} ничего не нашлось`));
 });
+
+app.use(errors());
 
 app.use((err, req, res, next) => {
   errorHandler(err, req, res, next);
