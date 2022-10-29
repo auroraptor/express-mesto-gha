@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
@@ -10,10 +9,6 @@ const { HTTP404Error } = require('../errors/HTTP404Error');
 
 module.exports.createUser = async (req, res, next) => {
   try {
-    if (!validator.isEmail(req.body.email)) {
-      next(new HTTP401Error('Необходима авторизация'));
-      return;
-    }
     const hash = await bcrypt.hash(req.body.password, 17); // 𓃦 ⑰ ♡
     const user = await User.create({ ...req.body, password: hash });
     const {
