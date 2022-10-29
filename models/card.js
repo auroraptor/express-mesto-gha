@@ -15,7 +15,7 @@ const cardSchema = new mongoose.Schema({
       validator(link) {
         return validator.isURL(link) === true;
       },
-      message: '{VALUE} is not a valid URL',
+      message: 'Is not a valid URL',
     },
   },
   owner: {
