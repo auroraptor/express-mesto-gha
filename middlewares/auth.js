@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { HttpStatusCode } = require('../utils/HttpStatusCode');
+const { HTTP401Error } = require('../errors/HTTP401Error');
 
 module.exports = (req, res, next) => {
   let payload;
@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
     const token = req.cookies.jwt;
     payload = jwt.verify(token, '🔐');
   } catch (err) {
-    res.status(HttpStatusCode.UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+    next(new HTTP401Error('Необходима авторизация'));
     return;
   }
   req.user = payload;
