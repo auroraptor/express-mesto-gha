@@ -10,6 +10,7 @@ const { logNow, logError } = require('./utils/log');
 const { url, password } = require('./utils/regexps');
 const { errorHandler } = require('./middlewares/errorHandler');
 const { HTTP404Error } = require('./errors/HTTP404Error');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -21,6 +22,8 @@ app.use(cookieParser());
 mongoose.connect('mongodb://localhost:27017/mestodb', { autoIndex: true })
   .then(() => logNow('Connected to the server'))
   .catch((err) => logError(err));
+
+app.use(requestLogger);
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -44,6 +47,8 @@ app.use('/', auth, router);
 app.use('*', (req, res, next) => {
   next(new HTTP404Error(`По адресу ${req.baseUrl} ничего не нашлось`));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
